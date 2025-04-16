@@ -2,7 +2,11 @@
   "manifest_version": 3,
   "name": "SortList Scraper",
   "version": "1.0",
-  "permissions": ["activeTab", "downloads", "storage"],
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "scripting"
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -16,8 +20,18 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.sortlist.fr/agency/*"],
-      "js": ["content.js"]
+      "matches": [
+        "*://*.sortlist.fr/agency/*",
+        "*://*.sortlist.fr/agence/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["popup/popup.css"],
+      "matches": ["<all_urls>"]
     }
   ]
 }

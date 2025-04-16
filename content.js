@@ -1,46 +1,54 @@
-// Content Script - SortList Scraper
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "scrapeData") {
+    try {
+      const fullData = collectAllData();
+      const response = {
+        success: true,
+        data: {
+          name: fullData.basicInfo.name,
+          rating: {
+            score: fullData.basicInfo.rating.score,
+            reviewCount: fullData.basicInfo.rating.reviewCount,
+          },
+          description: fullData.basicInfo.description,
+          services: fullData.services
+        }
+      };
+      sendResponse(response);
+    } catch (err) {
+      sendResponse({ success: false, error: err.message });
+    }
+    return true;
+  }
+});
 
-/**
- * Gets agency name from page
- * @returns {string} Agency name
- */
-function getAgencyName() {
-  return document.querySelector('h1.bold.h1.text-break-word')?.textContent.trim();
+// Function to get the agency name
+function scrapeAgencyName() {
+  const agencyName = document.querySelector("h1.bold.h1.text-break-word")?.innerText || "No name found";
+  console.log("Extracted Agency Name:", agencyName);
+  return agencyName;
 }
 
-/**
- * Extracts rating data from SortList agency profile
- * @returns {Object} Contains score, reviewCount, and scale
- */
+// Function to get the agency rating
 function getAgencyRating() {
-  // 1. Find the main rating container
   const ratingContainer = document.querySelector('[data-testid="star-rating-5"]')?.closest('.layout-column.py-32');
   if (!ratingContainer) return null;
 
-  // 2. Extract all data points
   return {
     score: ratingContainer.querySelector('.h1.bold')?.textContent || null,
     reviewCount: ratingContainer.querySelector('a span')?.textContent?.match(/\d+/)?.[0] || '0',
-    scale: '5', // Hardcoded as SortList always uses 5-star system
+    scale: '5',  // Assuming it's always a 5-star system
     lastUpdated: new Date().toISOString()
   };
 }
 
-/**
- * Extracts and cleans the agency description
- * @returns {string} Formatted description text
- */
+// Function to get the agency description
 function getPerfectDescription() {
   const container = document.querySelector('[data-testid="clamp-lines"]');
   if (!container) return null;
 
-  // Create working copy
   const clone = container.cloneNode(true);
-  
-  // Clean unwanted elements
   clone.querySelectorAll('a[role="button"]').forEach(btn => btn.remove());
-  
-  // Convert HTML breaks to newlines and paragraphs
   clone.querySelectorAll('br').forEach(br => br.replaceWith('\n\n'));
   clone.querySelectorAll('p').forEach(p => p.replaceWith('\n\n' + p.textContent + '\n\n'));
   clone.querySelectorAll('div').forEach(div => {
@@ -50,34 +58,37 @@ function getPerfectDescription() {
       div.remove();
     }
   });
-  
-  // Get raw text and clean it
+
   let text = clone.textContent
-    .replace(/ /g, ' ')       // Replace non-breaking spaces
-    .replace(/\s+/g, ' ')     // Collapse multiple spaces
+    .replace(/ /g, ' ')
+    .replace(/\s+/g, ' ')
     .trim();
-  
-  // Enhanced formatting
+
   text = text
-    // Add paragraph breaks after headings
     .replace(/(English Below)/g, '\n\n$1\n\n')
     .replace(/(Notre expertise)/g, '\n\n$1\n\n')
     .replace(/(La méthode agile)/g, '\n\n$1\n\n')
     .replace(/(Galadrim is building)/g, '\n\n$1\n\n')
-    // Normalize sentence spacing
     .replace(/([.!?])( [A-ZÉÀÇ])/g, '$1\n\n$2')
-    // Clean up whitespace
     .replace(/\n /g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .trim();
-    
+    .replace(/\n{3,}/g, '\n\n');
+
   return text;
 }
 
-/**
- * Extracts services information
- * @returns {Array} List of services with details
- */
+// Function to collect all data: name, rating, description, services
+function collectAllData() {
+  return {
+    basicInfo: {
+      name: scrapeAgencyName(),
+      rating: getAgencyRating(),
+      description: getPerfectDescription()
+    },
+    services: extractServices()
+  };
+}
+
+// Function to extract services
 function extractServices() {
   const services = [];
   const serviceElements = document.querySelectorAll('li.layout-column.layout-align-start-stretch');
@@ -132,54 +143,4 @@ function extractServices() {
   });
   
   return services;
-}
-
-/**
- * Collects all agency data into a single object
- * @returns {Object} Complete agency profile data
- */
-function collectAllData() {
-  return {
-    basicInfo: {
-      name: getAgencyName(),
-      ...getAgencyRating(),
-      description: getPerfectDescription()
-    },
-    services: extractServices(),
-    meta: {
-      scrapedAt: new Date().toISOString(),
-      sourceUrl: window.location.href
-    }
-  };
-}
-
-// Listen for messages from the popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "getAgencyData") {
-    try {
-      if (!window.location.href.includes('sortlist.fr/agency/')) {
-        throw new Error('Not on a SortList agency profile page');
-      }
-      
-      const agencyData = collectAllData();
-      
-      if (!agencyData.basicInfo.name) {
-        throw new Error('Failed to detect agency profile data');
-      }
-      
-      sendResponse({ success: true, data: agencyData });
-    } catch (error) {
-      sendResponse({ 
-        success: false, 
-        error: error.message,
-        details: 'Please navigate to a SortList agency profile page first.'
-      });
-    }
-  }
-  return true; // Keep the message channel open for async response
-});
-
-// Initial check when injected
-if (window.location.href.includes('sortlist.fr/agency/')) {
-  console.log('SortList Scraper content script loaded on agency profile');
 }

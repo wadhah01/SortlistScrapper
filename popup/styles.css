@@ -1,0 +1,13 @@
+.hidden {
+    display: none;
+  }
+  
+  #results {
+    margin-top: 20px;
+  }
+  
+  #agencyDetails {
+    padding: 10px;
+    background: #f4f4f4;
+  }
+  

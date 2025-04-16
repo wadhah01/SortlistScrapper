@@ -1,18 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SortList Scraper</title>
-  <style>
-    body { width: 400px; padding: 15px; font-family: Arial, sans-serif; }
-    #data-display { max-height: 300px; overflow-y: auto; margin: 10px 0; }
-    button { padding: 8px 12px; margin-right: 10px; cursor: pointer; }
-    .service { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h2>SortList Scraper</h2>
-  <div id="data-display"></div>
-  <button id="download-btn">Download as JSON</button>
+  <h1>SortList Scraper</h1>
+  <button id="scrapeBtn">Scrape Agency Data</button>
+  <button id="downloadBtn">Download Data</button>
+  
+  <div id="error" class="hidden"></div>
+  
+  <div id="results" class="hidden">
+    <h2 id="agencyName"></h2>
+    <div id="agencyDetails"></div>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
