@@ -1,40 +1,30 @@
-📌 SortlistScrapper — Chrome Extension
+# 📌 SortlistScrapper — Chrome Extension
 A simple Chrome extension that scrapes data from Sortlist listings.
 
-📥 Installation
-Download or clone this repository:
-git clone https://github.com/yourusername/SortlistScrapper.git
+## 📥 Installation
+1. Download or clone this repository:
+   git clone https://github.com/wadhah01/SortlistScrapper.git
+2. Open Chrome and go to:
+   chrome://extensions/
+3. Enable Developer mode (top right corner)
+4. Click Load unpacked
+5. Select the folder where you cloned the extension
 
-Open Chrome and go to chrome://extensions/
+## 🚀 Usage
+1. Go to Sortlist.fr
+2. Open the extension popup by clicking the extension icon
+3. Click Start Scraping
+4. Data will be extracted and saved as data.json
 
-Enable Developer mode (top right corner)
+## 📄 Features
+- Scrapes agency names, locations, categories, and ratings
+- Exports results as json file
+- Clean and easy-to-use interface
 
-Click Load unpacked
+## 💡 Notes
+- Works best on desktop Chrome browser
+- Report issues in GitHub Issues
 
-Select the folder where you cloned the extension
-
-🚀 Usage
-Go to Sortlist.fr
-
-Open the extension popup by clicking the extension icon in the toolbar
-
-Click Start Scraping
-
-Data will be extracted and displayed/downloaded as data.csv (or however you’re handling output)
-
-📄 Features
-Scrapes agency names, locations, categories, and ratings from Sortlist
-
-Exports results as a CSV file
-
-Clean and easy-to-use interface
-
-💡 Notes
-Works best on desktop Chrome browser
-
-Tested on [insert URL or version info if relevant]
-
-If you encounter any issues, create an Issue
-
-🤝 Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you’d like to change.
+## 🤝 Contributing
+- Pull requests are welcome
+- For major changes, please open an issue first
